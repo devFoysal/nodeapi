@@ -1,3 +1,4 @@
+const ErrorResponse = require("../utils/errorResponse");
 const Category = require("../models/Category");
 
 //@desc     Get all categories
@@ -13,10 +14,7 @@ exports.getCtegories = async (req, res, next) => {
       data: categories,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: "Bad request",
-    });
+    next(error);
   }
 };
 
@@ -26,20 +24,17 @@ exports.getCtegories = async (req, res, next) => {
 
 exports.getCategory = async (req, res, next) => {
   try {
-    const category = await Category.find({ _id: req.params.id });
+    const category = await Category.findById(req.params.id);
     if (!category)
-      return res.status(400).json({
-        success: false,
-      });
+      return next(
+        new ErrorResponse(`Category not found with id of ${req.params.id}`, 404)
+      );
     res.status(200).json({
       success: true,
       data: category,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: "Bad request",
-    });
+    next(error);
   }
 };
 
@@ -56,13 +51,7 @@ exports.createCategory = async (req, res, next) => {
       date: category,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message:
-        error.code === 11000
-          ? "Duplicate entry. Please try another"
-          : "Bad request",
-    });
+    next(error);
   }
 };
 
@@ -77,18 +66,15 @@ exports.updateCategory = async (req, res, next) => {
       runValidators: true,
     });
     if (!category)
-      return res.status(400).json({
-        success: false,
-      });
+      return next(
+        new ErrorResponse(`Category not found with id of ${req.params.id}`, 404)
+      );
     res.status(200).json({
       success: true,
       data: category,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: "Bad request",
-    });
+    next(error);
   }
 };
 
@@ -97,20 +83,17 @@ exports.updateCategory = async (req, res, next) => {
 //@access   Private
 
 exports.deleteCategory = async (req, res, next) => {
-    try {
-        const category = await Category.findByIdAndDelete(req.params.id);
-        if (!category)
-          return res.status(400).json({
-            success: false,
-          });
-        res.status(200).json({
-          success: true,
-          data: {},
-        });
-      } catch (error) {
-        res.status(400).json({
-          success: false,
-          message: "Bad request",
-        });
-      }
+  try {
+    const category = await Category.findByIdAndDelete(req.params.id);
+    if (!category)
+      return next(
+        new ErrorResponse(`Category not found with id of ${req.params.id}`, 404)
+      );
+    res.status(200).json({
+      success: true,
+      data: {},
+    });
+  } catch (error) {
+    next(error);
+  }
 };
