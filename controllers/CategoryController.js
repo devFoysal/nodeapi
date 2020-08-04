@@ -8,6 +8,7 @@ const Category = require("../models/Category");
 
 exports.getCtegories = asyncHandeler(async (req, res, next) => {
   const categories = await Category.find();
+  if (!categories) return next(new ErrorResponse(`Categories not found`, 404));
   res.status(200).json({
     success: true,
     count: categories.length,

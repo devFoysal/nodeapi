@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const CategorySchema = new mongoose.Schema({
     name:{
@@ -21,6 +22,11 @@ const CategorySchema = new mongoose.Schema({
     updatedAt:{
         type: Date
     }
+});
+
+CategorySchema.pre("save", function(next){
+    this.slug = slugify(this.name, {lower:true})
+    next()
 })
 
 module.exports = mongoose.model("Category", CategorySchema);
